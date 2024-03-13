@@ -1,5 +1,5 @@
 use std::io;
-use std::io::prelude::*;
+// use std::io::prelude::*;
 use ldk_node::lightning::ln::msgs::SocketAddress;
 use std::sync::Arc;
 use ldk_node::{Builder, Config, Node, default_config};
@@ -7,6 +7,8 @@ use ldk_node::bitcoin::Network;
 
 use std::thread;
 use core::time::Duration;
+
+const DEBUG: bool = false;
 
 pub fn run() -> () {
     let mut config = default_config();
@@ -23,9 +25,9 @@ pub fn run() -> () {
     let event_node = Arc::clone(&node_a);
     std::thread::spawn(move || loop {
         let event = event_node.wait_next_event();
-        println!("GOT NEW EVENT: {:?}", event);
-        println!("Channels: {:?}", event_node.list_channels());
-        println!("Payments: {:?}", event_node.list_payments());
+        if DEBUG { println!("GOT NEW EVENT: {:?}", event); }
+        if DEBUG { println!("Channels: {:?}", event_node.list_channels()); }
+        if DEBUG { println!("Payments: {:?}", event_node.list_payments()); }
         event_node.event_handled();
     });
 
@@ -49,35 +51,31 @@ pub fn run() -> () {
         true).unwrap();
 
 	let offer = node_a.bolt12_payment().receive(10_000, "testing").unwrap();
-	println!("Node offer: {}", offer);
+	if DEBUG { println!("Node offer: {}", offer); }
 
-    println!("Node ID: {}", node_a.node_id());
-	println!("Node listening address: {:?}", node_a.listening_addresses());
-    println!("Address: {}", node_a.onchain_payment().new_address().unwrap());
-    println!("Funds: {:?}", node_a.list_balances());
-    println!("Channels: {:?}", node_a.list_channels());
+    if DEBUG { println!("Node ID: {}", node_a.node_id()); }
+	if DEBUG { println!("Node listening address: {:?}", node_a.listening_addresses()); }
+    if DEBUG { println!("Address: {}", node_a.onchain_payment().new_address().unwrap()); }
+    if DEBUG { println!("Funds: {:?}", node_a.list_balances()); }
+    if DEBUG { println!("Channels: {:?}", node_a.list_channels()); }
 
-    // Make a payment to the offer
-    
     loop {
-        let payment_id = node_a.bolt12_payment().send(&offer, Some("TODO".to_string())).unwrap();
-        println!("*** Payment id: {:?} ***", payment_id);
+        println!("> Are you ok this week? ");
+        let mut input = String::new();
+        io::stdin().read_line(&mut input).expect("Failed to read line");
+        let input = input.trim().to_lowercase();
 
+        if input == "ok" {
+            let payment_id = node_a.bolt12_payment().send(&offer, Some("TODO".to_string())).unwrap();
+            if DEBUG { println!("*** Payment id: {:?} ***", payment_id); }
+            println!("-- Thank you for your payment");
+        } else if input == "exit" {
+            node_a.stop().unwrap();
+            node_b.stop().unwrap();
+            break;
+        } else {
+            println!("-- Since you are sick you don't get to pay"); 
+        }
         thread::sleep(Duration::from_secs(10));
     }
-
-    pause();
-    node_a.stop().unwrap();
-}
-
-fn pause() {
-	let mut stdin = io::stdin();
-	let mut stdout = io::stdout();
-
-	// We want the cursor to stay at the end of the line, so we print without a newline and flush manually.
-	write!(stdout, "Press any key to continue...").unwrap();
-	stdout.flush().unwrap();
-
-	// Read a single byte and discard
-	let _ = stdin.read(&mut [0u8]).unwrap();
 }
