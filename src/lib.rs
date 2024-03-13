@@ -35,12 +35,13 @@ pub fn run() -> () {
 		port: 9377
 	}]).unwrap();
     let node_b = Arc::new(builder.build().unwrap());
-
+    node_b.start().unwrap();
+    
     node_a.connect_open_channel(
         node_b.node_id(),
-        SocketAddress::TcpIpV4 { addr: [127, 0, 0, 1], port: 9377 },
+        node_b.listening_addresses().unwrap().first().unwrap().clone(),
         10_000,
-        Some(5000),
+        None,
         None,
         true).unwrap();
 
