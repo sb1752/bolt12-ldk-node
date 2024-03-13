@@ -5,6 +5,9 @@ use std::sync::Arc;
 use ldk_node::{Builder, Config, Node, default_config};
 use ldk_node::bitcoin::Network;
 
+use std::thread;
+use core::time::Duration;
+
 pub fn run() -> () {
     let mut config = default_config();
     config.network = Network::Signet;
@@ -45,14 +48,23 @@ pub fn run() -> () {
         None,
         true).unwrap();
 
-	// let offer = node_a.bolt12_payment().receive(10_000, "testing").unwrap();
-	// println!("Node offer: {}", offer);
+	let offer = node_a.bolt12_payment().receive(10_000, "testing").unwrap();
+	println!("Node offer: {}", offer);
 
     println!("Node ID: {}", node_a.node_id());
 	println!("Node listening address: {:?}", node_a.listening_addresses());
     println!("Address: {}", node_a.onchain_payment().new_address().unwrap());
     println!("Funds: {:?}", node_a.list_balances());
     println!("Channels: {:?}", node_a.list_channels());
+
+    // Make a payment to the offer
+    
+    loop {
+        let payment_id = node_a.bolt12_payment().send(&offer, Some("TODO".to_string())).unwrap();
+        println!("*** Payment id: {:?} ***", payment_id);
+
+        thread::sleep(Duration::from_secs(10));
+    }
 
     pause();
     node_a.stop().unwrap();
