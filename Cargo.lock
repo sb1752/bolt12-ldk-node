@@ -745,7 +745,7 @@ dependencies = [
 [[package]]
 name = "lightning"
 version = "0.0.121"
-source = "git+https://github.com/tnull/rust-lightning?branch=2024-03-invoice-generated-event#35c408fca8c2e6e8d13d77a549b2c2041ce4041e"
+source = "git+https://github.com/tnull/rust-lightning?branch=2024-03-invoice-generated-event#8138bec3954e85da3e1b1b8b9593c5f9528e424d"
 dependencies = [
  "bitcoin",
  "hex-conservative",
@@ -755,7 +755,7 @@ dependencies = [
 [[package]]
 name = "lightning-background-processor"
 version = "0.0.121"
-source = "git+https://github.com/tnull/rust-lightning?branch=2024-03-invoice-generated-event#35c408fca8c2e6e8d13d77a549b2c2041ce4041e"
+source = "git+https://github.com/tnull/rust-lightning?branch=2024-03-invoice-generated-event#8138bec3954e85da3e1b1b8b9593c5f9528e424d"
 dependencies = [
  "bitcoin",
  "lightning",
@@ -765,7 +765,7 @@ dependencies = [
 [[package]]
 name = "lightning-invoice"
 version = "0.29.0"
-source = "git+https://github.com/tnull/rust-lightning?branch=2024-03-invoice-generated-event#35c408fca8c2e6e8d13d77a549b2c2041ce4041e"
+source = "git+https://github.com/tnull/rust-lightning?branch=2024-03-invoice-generated-event#8138bec3954e85da3e1b1b8b9593c5f9528e424d"
 dependencies = [
  "bech32",
  "bitcoin",
@@ -791,7 +791,7 @@ dependencies = [
 [[package]]
 name = "lightning-net-tokio"
 version = "0.0.121"
-source = "git+https://github.com/tnull/rust-lightning?branch=2024-03-invoice-generated-event#35c408fca8c2e6e8d13d77a549b2c2041ce4041e"
+source = "git+https://github.com/tnull/rust-lightning?branch=2024-03-invoice-generated-event#8138bec3954e85da3e1b1b8b9593c5f9528e424d"
 dependencies = [
  "bitcoin",
  "lightning",
@@ -801,7 +801,7 @@ dependencies = [
 [[package]]
 name = "lightning-persister"
 version = "0.0.121"
-source = "git+https://github.com/tnull/rust-lightning?branch=2024-03-invoice-generated-event#35c408fca8c2e6e8d13d77a549b2c2041ce4041e"
+source = "git+https://github.com/tnull/rust-lightning?branch=2024-03-invoice-generated-event#8138bec3954e85da3e1b1b8b9593c5f9528e424d"
 dependencies = [
  "bitcoin",
  "lightning",
@@ -811,7 +811,7 @@ dependencies = [
 [[package]]
 name = "lightning-rapid-gossip-sync"
 version = "0.0.121"
-source = "git+https://github.com/tnull/rust-lightning?branch=2024-03-invoice-generated-event#35c408fca8c2e6e8d13d77a549b2c2041ce4041e"
+source = "git+https://github.com/tnull/rust-lightning?branch=2024-03-invoice-generated-event#8138bec3954e85da3e1b1b8b9593c5f9528e424d"
 dependencies = [
  "bitcoin",
  "lightning",
@@ -820,7 +820,7 @@ dependencies = [
 [[package]]
 name = "lightning-transaction-sync"
 version = "0.0.121"
-source = "git+https://github.com/tnull/rust-lightning?branch=2024-03-invoice-generated-event#35c408fca8c2e6e8d13d77a549b2c2041ce4041e"
+source = "git+https://github.com/tnull/rust-lightning?branch=2024-03-invoice-generated-event#8138bec3954e85da3e1b1b8b9593c5f9528e424d"
 dependencies = [
  "bdk-macros",
  "bitcoin",

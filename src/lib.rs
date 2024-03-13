@@ -1,5 +1,6 @@
 use std::io;
 use std::io::prelude::*;
+use ldk_node::lightning::ln::msgs::SocketAddress;
 use std::sync::Arc;
 use ldk_node::{Builder, Config, Node, default_config};
 use ldk_node::bitcoin::Network;
@@ -7,13 +8,16 @@ use ldk_node::bitcoin::Network;
 pub fn run() -> () {
     let mut config = default_config();
     config.network = Network::Signet;
-
     let mut builder = Builder::from_config(config);
     builder.set_esplora_server("https://mutinynet.com/api/".to_string());
-    let node = Arc::new(builder.build().unwrap());
+	builder.set_listening_addresses(vec![SocketAddress::TcpIpV4 {
+		addr: [127, 0, 0, 1],
+		port: 9376
+	}]).unwrap();
+	let node_a = Arc::new(builder.build().unwrap());
 
-    node.start().unwrap();
-    let event_node = Arc::clone(&node);
+    node_a.start().unwrap();
+    let event_node = Arc::clone(&node_a);
     std::thread::spawn(move || loop {
         let event = event_node.wait_next_event();
         println!("GOT NEW EVENT: {:?}", event);
@@ -22,22 +26,35 @@ pub fn run() -> () {
         event_node.event_handled();
     });
 
-    println!("Node ID: {}", node.node_id());
-    println!("Address: {}", node.onchain_payment().new_address().unwrap());
-    println!("Channels: {:?}", node.list_channels());
-    println!("Payments: {:?}", node.list_payments());
-    println!("Funds: {:?}", node.list_balances());
+    let mut config = default_config();
+    config.network = Network::Signet;
+    let mut builder = Builder::from_config(config);
+    builder.set_esplora_server("https://mutinynet.com/api/".to_string());
+	builder.set_listening_addresses(vec![SocketAddress::TcpIpV4 {
+		addr: [127, 0, 0, 1],
+		port: 9377
+	}]).unwrap();
+    let node_b = Arc::new(builder.build().unwrap());
 
-    let node_id = "02465ed5be53d04fde66c9418ff14a5f2267723810176c9212b722e542dc1afb1b".parse().unwrap();
-    let address = "45.79.52.207:9735".parse().unwrap();
-    node.connect_open_channel(node_id, address, 5_000_000, None, None, false).unwrap();
+    node_a.connect_open_channel(
+        node_b.node_id(),
+        SocketAddress::TcpIpV4 { addr: [127, 0, 0, 1], port: 9377 },
+        10_000,
+        Some(5000),
+        None,
+        true).unwrap();
 
-    node.sync_wallets().unwrap();
+	// let offer = node_a.bolt12_payment().receive(10_000, "testing").unwrap();
+	// println!("Node offer: {}", offer);
 
-    node.spontaneous_payment().send(500_000, node_id).unwrap();
+    println!("Node ID: {}", node_a.node_id());
+	println!("Node listening address: {:?}", node_a.listening_addresses());
+    println!("Address: {}", node_a.onchain_payment().new_address().unwrap());
+    println!("Funds: {:?}", node_a.list_balances());
+    println!("Channels: {:?}", node_a.list_channels());
 
     pause();
-    node.stop().unwrap();
+    node_a.stop().unwrap();
 }
 
 fn pause() {
