@@ -8,7 +8,7 @@ use ldk_node::bitcoin::Network;
 use std::thread;
 use core::time::Duration;
 
-const DEBUG: bool = false;
+const DEBUG: bool = true;
 
 pub fn run() -> () {
     let mut config = default_config();
@@ -41,7 +41,14 @@ pub fn run() -> () {
 	}]).unwrap();
     let node_b = Arc::new(builder.build().unwrap());
     node_b.start().unwrap();
-    
+
+    if DEBUG { println!("Node ID: {}", node_a.node_id()); }
+	if DEBUG { println!("Node listening address: {:?}", node_a.listening_addresses()); }
+    if DEBUG { println!("Node A Address: {}", node_a.onchain_payment().new_address().unwrap()); }
+    if DEBUG { println!("Node B Address: {}", node_b.onchain_payment().new_address().unwrap()); }
+    if DEBUG { println!("Funds: {:?}", node_a.list_balances()); }
+    if DEBUG { println!("Channels: {:?}", node_a.list_channels()); }
+
     node_a.connect_open_channel(
         node_b.node_id(),
         node_b.listening_addresses().unwrap().first().unwrap().clone(),
@@ -52,12 +59,6 @@ pub fn run() -> () {
 
 	let offer = node_a.bolt12_payment().receive(10_000, "testing").unwrap();
 	if DEBUG { println!("Node offer: {}", offer); }
-
-    if DEBUG { println!("Node ID: {}", node_a.node_id()); }
-	if DEBUG { println!("Node listening address: {:?}", node_a.listening_addresses()); }
-    if DEBUG { println!("Address: {}", node_a.onchain_payment().new_address().unwrap()); }
-    if DEBUG { println!("Funds: {:?}", node_a.list_balances()); }
-    if DEBUG { println!("Channels: {:?}", node_a.list_channels()); }
 
     loop {
         println!("> Are you ok this week? ");
@@ -76,6 +77,6 @@ pub fn run() -> () {
         } else {
             println!("-- Since you are sick you don't get to pay"); 
         }
-        thread::sleep(Duration::from_secs(10));
+        thread::sleep(Duration::from_secs(5));
     }
 }
