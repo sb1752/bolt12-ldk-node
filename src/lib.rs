@@ -57,11 +57,9 @@ pub fn run() -> () {
         event_node.event_handled();
     });
 
-    // if DEBUG { println!("Node ID: {}", node_a.node_id()); }
-	// if DEBUG { println!("Node listening address: {:?}", node_a.listening_addresses()); }
-    // if DEBUG { println!("Funds: {:?}", node_a.list_balances()); }
+    std::thread::sleep(Duration::from_secs(5));
 
-    let channel_id = node_a.connect_open_channel(
+    let _ = node_a.connect_open_channel(
         node_b.node_id(),
         node_b.listening_addresses().unwrap().first().unwrap().clone(),
         10_000,
@@ -70,9 +68,8 @@ pub fn run() -> () {
         false).unwrap();
 
     if DEBUG { println!("Channels: {:?}", node_a.list_channels()); }
-    if DEBUG { println!("Channel ID: {:?}", channel_id)};
     
-    let mut offer = node_b.bolt12_payment().receive(10_000, "testing").unwrap();
+    let mut offer = node_b.bolt12_payment().receive(1_000_000, "testing").unwrap();
     if DEBUG { println!("Node offer: {}", offer); }
 
     loop {
@@ -92,7 +89,7 @@ pub fn run() -> () {
             node_b.stop().unwrap();
             break;
         } else if input == "create offer" {
-            offer = node_b.bolt12_payment().receive(10_000, "testing").unwrap();
+            offer = node_b.bolt12_payment().receive(1_000_000, "testing").unwrap();
             if DEBUG { println!("Node offer: {}", offer); }
         } else {
             println!("-- Since you are sick you don't get to pay"); 
