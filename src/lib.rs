@@ -2,7 +2,7 @@ use std::io;
 // use std::io::prelude::*;
 use ldk_node::lightning::ln::msgs::SocketAddress;
 use std::sync::Arc;
-use ldk_node::{Builder, Config, Node, default_config};
+use ldk_node::{Builder, default_config};
 use ldk_node::bitcoin::Network;
 
 use std::thread;
