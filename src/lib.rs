@@ -7,6 +7,7 @@ use ldk_node::bitcoin::Network;
 
 use std::thread;
 use core::time::Duration;
+use ldk_node::LogLevel;
 
 const DEBUG: bool = true;
 
@@ -14,6 +15,7 @@ pub fn run() -> () {
     let mut config_a = default_config();
     config_a.network = Network::Signet;
     config_a.storage_dir_path = "/tmp/ldk_node_a".to_string();
+    config_a.log_level = LogLevel::Trace;
     let mut builder_a = Builder::from_config(config_a);
     builder_a.set_esplora_server("https://mutinynet.com/api/".to_string());
 	builder_a.set_listening_addresses(vec![SocketAddress::TcpIpV4 {
@@ -25,6 +27,7 @@ pub fn run() -> () {
 
     let mut config_b = default_config();
     config_b.network = Network::Signet;
+    config_b.log_level = LogLevel::Trace;
     config_b.storage_dir_path = "/tmp/ldk_node_b".to_string();
     let mut builder_b = Builder::from_config(config_b);
     builder_b.set_esplora_server("https://mutinynet.com/api/".to_string());
@@ -64,13 +67,13 @@ pub fn run() -> () {
         10_000,
         None,
         None,
-        true).unwrap();
+        false).unwrap();
 
     if DEBUG { println!("Channels: {:?}", node_a.list_channels()); }
     if DEBUG { println!("Channel ID: {:?}", channel_id)};
-
-	let offer = node_b.bolt12_payment().receive(10_000, "testing").unwrap();
-	if DEBUG { println!("Node offer: {}", offer); }
+    
+    let mut offer = node_b.bolt12_payment().receive(10_000, "testing").unwrap();
+    if DEBUG { println!("Node offer: {}", offer); }
 
     loop {
         println!("> Are you ok this week? ");
@@ -88,9 +91,12 @@ pub fn run() -> () {
             node_a.stop().unwrap();
             node_b.stop().unwrap();
             break;
+        } else if input == "create offer" {
+            offer = node_b.bolt12_payment().receive(10_000, "testing").unwrap();
+            if DEBUG { println!("Node offer: {}", offer); }
         } else {
             println!("-- Since you are sick you don't get to pay"); 
-            println!("Node A balance: {:?}", node_a.list_balances().spendable_onchain_balance_sats);
+            println!("Node A balance: {:?}", node_a.list_balances().total_lightning_balance_sats);
         }
         thread::sleep(Duration::from_secs(5));
     }
